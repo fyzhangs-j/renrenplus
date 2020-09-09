@@ -1,0 +1,52 @@
+package ${package}.${moduleName}.service;
+
+import com.baomidou.mybatisplus.extension.service.IService;
+import com.unqd.common.PageResult;
+import ${package}.${moduleName}.entity.${className};
+import ${package}.${moduleName}.dto.${className}DTO;
+import ${package}.${moduleName}.vo.${className}VO;
+import ${package}.${moduleName}.vo.${className}ListVO;
+import java.util.Map;
+
+/**
+ * ${comments}
+ *
+ * @author ${author}
+ * @email ${email}
+ * @date ${datetime}
+ */
+public interface ${className}Service extends IService<${className}> {
+
+    /**
+    *
+    * 综合查询
+    */
+    PageResult<${className}ListVO>  ${classname}List(Map<Object, Object> queryMap);
+
+
+
+    /**
+    *
+    *查详情
+    */
+    ${className}VO  get${className}ById(String ${pk.attrname});
+
+    /**
+    * 保存
+    *
+    */
+    boolean  save${className}(${className}DTO ${classname}dto);
+
+    /**
+    *
+    *更新
+    */
+    boolean update${className}ById (${className}DTO ${classname}dto);
+
+    /**
+    *
+    *删除
+    */
+    boolean  remove${className}ById(Map<String, String> removeMap);
+}
+

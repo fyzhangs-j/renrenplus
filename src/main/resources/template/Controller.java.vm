@@ -1,0 +1,150 @@
+package ${package}.${moduleName}.controller;
+
+import java.util.Arrays;
+import java.util.Map;
+import java.util.Date;
+import java.util.HashMap;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import ${package}.${moduleName}.dto.${className}DTO;
+import ${package}.${moduleName}.vo.${className}VO;
+import ${package}.${moduleName}.vo.${className}ListVO;
+import ${package}.${moduleName}.service.${className}Service;
+import com.unqd.common.BaseController;
+import com.unqd.common.Result;
+import com.unqd.common.PageResult;
+import com.unqd.app.utils.MessageConstants;
+import com.unqd.common.ErrorCode;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import lombok.extern.slf4j.Slf4j;
+import com.unqd.dto.SysUserTokenInfo;
+import javax.validation.constraints.NotNull;
+/**
+ * ${comments}
+ *
+ * @author ${author}
+ * @email ${email}
+ * @date ${datetime}
+ */
+@RestController
+@RequestMapping("app/lib/v1/${classname}")
+@Api(value = "${comments}",tags = "编号、${comments}")
+@Validated
+@Slf4j
+public class ${className}Controller extends BaseController{
+    @Autowired
+    private ${className}Service ${classname}Service;
+
+    /**
+     * 列表
+	 * @param params      模糊查询字段
+	 * @param startTime   开始时间(时间戳)
+	 * @param endTime     结束时间(时间戳)
+	 * @param currentPage 起始页
+	 * @param pageSize    页面大小
+	 * @return
+	 */
+    @GetMapping("/list")
+    @ApiOperation(value = "查列表", notes = "查列表", position = 2)
+    public Result<PageResult<${className}ListVO>> list(
+            @ApiParam(value = "模糊查询字段") @RequestParam(required = false) String params,
+            @ApiParam(value = "开始时间(时间戳)") @RequestParam(required = false) String startTime,
+            @ApiParam(value = "结束时间(时间戳)") @RequestParam(required = false) String endTime,
+            @ApiParam(value = "起始页", defaultValue = "1") @RequestParam(required = false, defaultValue = "1") int currentPage,
+            @ApiParam(value = "页面大小", defaultValue = "10") @RequestParam(required = false, defaultValue = "10") int pageSize){
+        Date start=null;
+        Date end =null;
+        if(StringUtils.isNotBlank(startTime) && StringUtils.isNotBlank(startTime)){
+            start = DateUtils.millisecondsToDate(startTime, DateUtils.FORMAT_DETAIL);
+            end = DateUtils.millisecondsToDate(endTime, DateUtils.FORMAT_DETAIL);
+        }
+        Map<Object, Object> queryMap = new HashMap<>();
+        queryMap.put("params",params);
+        queryMap.put("startTime",start);
+        queryMap.put("endTime",end);
+        queryMap.put("currentPage",currentPage);
+        queryMap.put("pageSize",pageSize);
+        PageResult<${className}ListVO> result =${classname}Service.${classname}List(queryMap);
+        return Result.ok(result);
+    }
+
+
+    /**
+     * 查详情
+     *@param ${pk.attrname}  业务id
+     *@return Boolean
+     */
+    @GetMapping("/{${pk.attrname}}")
+    @ApiOperation(value = "查详情", notes = "查详情", position = 2)
+    public Result<${className}VO> info(
+            @ApiParam(value = "业务id", required = true) @NotNull(message = MessageConstants.ID_NOT_BLANK) @PathVariable("${pk.attrname}") String ${pk.attrname}){
+		${className}VO result = ${classname}Service.get${className}ById(${pk.attrname});
+        return Result.ok(result);
+    }
+
+    /**
+     * 保存
+     *@param ${classname}dto
+     *@return Boolean
+     */
+    @PostMapping
+    @ApiOperation(value = "保存", notes = "保存", position = 2)
+    public Result<Boolean> save(
+            @RequestBody @ApiParam(value = "新增", required = true) @Validated ${className}DTO ${classname}dto){
+        SysUserTokenInfo sysUser = getSysUser();//登录人信息不需要可删除
+        String userId = null;
+        String realName = null;
+        if(sysUser !=null) {
+            userId =String.valueOf(sysUser.getUserId());
+            realName = sysUser.getRealName();
+        }
+		boolean result = ${classname}Service.save${className}(${classname}dto);
+        return Result.ok(result);
+    }
+
+    /**
+     * 修改
+     * @param ${classname}dto
+     * @return Boolean
+     */
+    @PutMapping
+    @ApiOperation(value = "编辑", notes = "编辑", position = 2)
+    public Result<Boolean> update(
+            @RequestBody @ApiParam(value = "编辑", required = true) @Validated ${className}DTO ${classname}dto){
+        SysUserTokenInfo sysUser = getSysUser();//登录人信息不需要可删除
+        String userId = null;
+        String realName = null;
+        if(sysUser !=null) {
+            userId =String.valueOf(sysUser.getUserId());
+            realName = sysUser.getRealName();
+        }
+        boolean result = ${classname}Service.update${className}ById(${classname}dto);
+        return Result.ok(result);
+    }
+
+    /**
+     * 删除
+     *@param ${pk.attrname}  业务id
+     *@return Boolean
+     */
+    @DeleteMapping("/{${pk.attrname}}")
+    @ApiOperation(value = "删除", notes = "删除", position = 2)
+    public Result<Boolean> delete(
+            @ApiParam(value = "业务id", required = true) @NotNull(message = MessageConstants.ID_NOT_BLANK) @PathVariable("${pk.attrname}") String ${pk.attrname}){
+        SysUserTokenInfo sysUser = getSysUser();//登录人信息不需要可删除
+        String userId = null;
+        String realName = null;
+        if(sysUser !=null) {
+            userId =String.valueOf(sysUser.getUserId());
+            realName = sysUser.getRealName();
+        }
+        Map<String, String> removeMap = new HashMap<>();
+        removeMap.put("id",${pk.attrname});
+        boolean result = ${classname}Service.remove${className}ById(removeMap);
+        return Result.ok(result);
+    }
+
+}

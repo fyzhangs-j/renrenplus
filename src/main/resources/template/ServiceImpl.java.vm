@@ -1,0 +1,94 @@
+package ${package}.${moduleName}.service.impl;
+
+import org.springframework.stereotype.Service;
+import java.util.Map;
+import java.util.List;
+import java.util.Date;
+import com.unqd.common.PageResult;
+import org.apache.commons.lang3.StringUtils;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.unqd.app.utils.BeanHelper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.unqd.utils.IdGenerator;
+import ${package}.${moduleName}.dto.${className}DTO;
+import ${package}.${moduleName}.vo.${className}VO;
+import ${package}.${moduleName}.vo.${className}ListVO;
+import ${package}.${moduleName}.mapper.${className}Mapper;
+import ${package}.${moduleName}.entity.${className};
+import ${package}.${moduleName}.service.${className}Service;
+
+
+@Service
+public class ${className}ServiceImpl extends ServiceImpl<${className}Mapper, ${className}> implements ${className}Service {
+
+    @Override
+    public PageResult<${className}ListVO>  ${classname}List(Map<Object, Object> queryMap) {
+        int currentPage =  (int)queryMap.get("currentPage");
+        int pageSize = (int)queryMap.get("pageSize");
+        QueryWrapper<${className}> queryWrapper = queryWrapper(queryMap);
+        Page<${className}> ${classname}Page = new Page<${className}>(currentPage, pageSize);
+        IPage<${className}> page = this.page(${classname}Page, queryWrapper);
+        List<${className}> records = page.getRecords();
+        List<${className}ListVO> list = records.stream().map(o -> BeanHelper.copyProperties(o, ${className}ListVO.class)).collect(Collectors.toList());
+        return  new PageResult<${className}ListVO>(list,  page.getTotal(), (long) pageSize,
+                (long) currentPage);
+    }
+
+    @Override
+    public ${className}VO  get${className}ById(String ${pk.attrname}) {
+            ${className} ${classname} = this.getById(${pk.attrname});
+            ${className}VO  result =BeanHelper.copyProperties(${classname}, ${className}VO.class);
+        return result;
+    }
+
+
+    @Override
+    public boolean update${className}ById (${className}DTO ${classname}dto) {
+        ${className} convert =BeanHelper.copyProperties(${classname}dto, ${className}.class);
+        boolean result = this.updateById(convert);
+        return result;
+    }
+
+
+    @Override
+    public boolean  save${className}(${className}DTO ${classname}dto) {
+        ${className} convert =BeanHelper.copyProperties(${classname}dto, ${className}.class);
+        String generateNo = IdGenerator.generateNo();//雪花算法的唯一id
+        boolean result = this.save(convert);
+        return result;
+    }
+
+
+
+
+
+    @Override
+    public boolean remove${className}ById(Map<String, String> removeMap) {
+        String id = removeMap.get("id");
+        ${className} convert = new ${className}();
+        convert.setIsDelete(1);
+        boolean result = this.updateById(convert);
+        return result;
+    }
+
+    private QueryWrapper<${className}> queryWrapper(Map<Object, Object> queryMap) {
+        Date startTime = (Date) queryMap.get("startTime");
+        Date endTime = (Date) queryMap.get("endTime");
+        String  params = (String) queryMap.get("params");
+        QueryWrapper<${className}> queryWrapper = new QueryWrapper<${className}>();
+        queryWrapper.gt(startTime !=null, "create_time", startTime)
+                    .le(endTime !=null, "create_time", endTime)
+                    .and(StringUtils.isNotBlank(params),
+                        c -> c.like( "**", params).or()
+                                .like("**", params).or()
+                                .like("**", params))
+                .orderByDesc("update_time");
+        return queryWrapper;
+
+    }
+
+}
